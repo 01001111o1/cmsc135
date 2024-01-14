@@ -44,3 +44,37 @@ function findIntersection(a, b, c, d, obstacles) {
     }
     return {x : false, y: false};
 }
+
+function drawAnts(){
+    for (let i = pheromones.length - 1; i >= 0; i--) {
+        const p = pheromones[i];
+        for (let n = 0; n < 3; n++) p.update();
+        p.render();
+        if (p.strength < 0) pheromones.splice(i, 1);
+      }
+    
+      for (let n = 0; n < 3; n++) {
+        for (let i = 2; i < vehicles.length; i++) {
+          const v = vehicles[i];
+          v.applyBehaviors();
+          v.update();
+          if (v.pos.dist(home) < homeR) v.reset();
+        }
+        frames++;
+      }
+      
+      for (const v of vehicles) v.render();
+      for(let i = 0; i < obstacles.length; i++) obstacles[i].renderObstacle();
+    
+    push();
+    noStroke();
+    fill(255, 0, 0);
+    circle(width - 100, height - 100, homeR * 2);
+    pop();
+    
+    push();
+    stroke(0, 255, 0);
+    fill(0, 255, 0);
+    circle(home.x, home.y, homeR * 2);
+    pop();
+}

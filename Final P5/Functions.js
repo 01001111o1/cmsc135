@@ -1,9 +1,3 @@
-function keyPressed(){
-  let p = new Point(graph.nodes.length, mouseX, mouseY)
-  graph.addNode(p)
-  return false;
-}
-
 function BFS(root, target){
   graph.reset()
   let queue = [];
@@ -14,9 +8,7 @@ function BFS(root, target){
   while(queue.length > 0){
     let current = queue.shift()
 
-    if(current == target){
-      break
-    }
+    if(current == target) break
     
     let edges = current.neighbors
     
@@ -40,111 +32,78 @@ function BFS(root, target){
   }
 }
 
-function simulateBFS(r, t){
+function simulateBFS(){
 
   path = []
-
-  for (let i = 0; i < graph.nodes.length; i++) graph.nodes[i].findNeighbors();
-
-  let root = graph.setStart(r);
-  let target = graph.setEnd(t);
-
+  for (let i = 0; i < COUNT; i++) graph.nodes[i].findNeighbors();
+  
   BFS(root, target);
 
   for (let k = 0; k < path.length - 1; k++) {
-
-    path[k].color = color(255, 0, 0)
-    path[k].diameter = PATH_DIAMETER
-    path[k].continueMoving = false
-    if(k == path.length - 2){
-      path[k + 1].color = color(255, 0, 0)
-      path[k + 1].diameter = PATH_DIAMETER
-      path[k + 1].continueMoving = false
-    }
     strokeWeight(4);
-    stroke(255, 255, 255);
-    line(...path[k].get_coordinates(), ...path[k + 1].get_coordinates());
+    stroke(255);
+    line(...path[k].coords(), ...path[k + 1].coords());
   }
   
 }
 
-function init_maze(){
-  cols = floor(width / w);
-  rows = floor(height / w);
-
-for(let i = 0; i < rows; i++){
-  grid.push([])
-  for(let j = 0; j < cols; j++){
-    grid[i].push(new Cell(i, j))
-  }
-}
-current = grid[0][0]
-}
-
-function generate_maze(){
-
-  while(count < rows * cols){
-      if(!current.visited) count++
-
-      current.visited = true
-
-      let next = current.getNext();
-      
-      if(next !== undefined){
-          
-          stack.push(current);
-          current.removeWalls(next);
-          current = next;
-
-      }else if (stack.length > 0){
-          current = stack.pop();
-      }
-  }
-
-  find_walls()
-}
-
-function find_walls(){
-
-  for(let i = 0; i < rows; i++){
-    for(let j = 0; j < cols; j++){
-      
-            let g = grid[i][j]
-            let x = g.x * w
-            let y = g.y * w
-
-            if(g.walls[0]) walls.push([x, y, x + w, y]);
-            if(g.walls[1]) walls.push([x + w, y, x + w, y + w]);
-            if(g.walls[2]) walls.push([x + w, y + w, x, y + w]);
-            if(g.walls[3]) walls.push([x, y + w, x, y]);            
-
-    }
-  }
-}
-
-function display_maze(){
-  for(let i = 0; i < rows; i++){
-    for(let j = 0; j < cols; j++){
-      grid[i][j].show()
-    }
-  }
-}
-
-function distance(p1, p2){
-  return dist(...p1.get_coordinates(), ...p2.get_coordinates());
-}
-
 function add_edge(p1, p2){
-  stroke(196, 180, 84)
-  let params = [...p1.get_coordinates(), ...p2.get_coordinates()]
-  line(...params);
+  stroke(255, 255, 0)
+  strokeWeight(1)
+  line(...p1.coords(), ...p2.coords());
 }
 
-// function P2PLineCollision(p1, p2){
-//   for(let i = 0; i < walls.length; i++){
-//     let [x, y, x2, y2] = walls[i]
-//     if(collideLineRect(...p1.get_coordinates(), ...p2.get_coordinates(), x, y, x2 - x, y2 - y) === true) return true
-//   }
-//   return false
-// }
+function P2PLineCollision(p1, p2){
+  for(const wall of obstacles){
+    if(collideLineLine(...p1.coords(), ...p2.coords(), ...wall.coords)) return true
+  }
+  return false
+}
 
+function init_setup(){
+  graph = new Graph();
+  home = createVector(100, 100);
+  goal = createVector(width - 100, height - 100)
+  homeR = 12;
+
+  obstacles.push(new Obstacle(400, 200, 500, 450));
+  obstacles.push(new Obstacle(100, 150, 200, 100))
+  // obstacles.push(new Obstacle(100, 400, 300, 200));
+  // obstacles.push(new Obstacle(200, 600, 600, 600));
+  // obstacles.push(new Obstacle(600, 400, 700, 200));
+  obstacles.push(new Obstacle(25, 25, width - 25, 25));
+  obstacles.push(new Obstacle(25, 25, 25, height - 25));
+  obstacles.push(new Obstacle(width - 25, 25, width - 25, height - 25));
+  obstacles.push(new Obstacle(25, height - 25, width - 25, height - 25));
+
+  const angle1 = random(TWO_PI);
+  const angle2 = random(TWO_PI);
+
+  const x = home.x + 1 * cos(angle1);
+  const y = home.y + 1 * sin(angle1);
+  let r = new Vehicle(0, x, y, angle1);
+  vehicles.push(r);
+  graph.addNode(r)
+
+  const a = goal.x + 1 * cos(angle2);
+  const b = goal.y + 1 * sin(angle2);
+  let t = new Vehicle(1, a, b, angle2);
+  vehicles.push(t);
+  graph.addNode(t)
+
+  root = graph.nodes[0]
+  target = graph.nodes[1]
+  graph.setStart(root.index)
+  graph.setEnd(target.index)
+
+  for (let i = 2; i < COUNT; i++) {
+    const angle = random(TWO_PI)
+    const j = home.x + homeR * cos(angle);
+    const k = home.y + homeR * sin(angle);
+    let n = new Vehicle(i, j, k, angle)
+    vehicles.push(n);
+    graph.addNode(n)
+  }
+
+  food.push(goal);
+}

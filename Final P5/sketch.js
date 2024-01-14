@@ -1,40 +1,26 @@
-let COUNT = 2, MAX_DIST = 200, w = 80, count = 0
-let path = [], walls = [], grid = [], stack = []
-let graph, rows, cols, current
-let DEFAULT_DIAMETER = 12, PATH_DIAMETER = 16
+let COUNT = 10, MAX_DIST = 100, frames = 30, maxRange = 60;
+let home, homeR;
+let path = [], obstacles = []
+let vehicles = [], pheromones = [], food = [];
+let graph, current, root, target
+let DEFAULT_DIAMETER = 12
 
 function setup() {
-  createCanvas(800, 800);
-  rectMode(CORNERS);
-
-  graph = new Graph();
-
-  init_maze()
-	generate_maze()	
-
-  for (let i = 0; i < COUNT; i++) {
-    let p = new Point(i, random(50, width - 50), random(50, height - 50));
-    graph.addNode(p);
-  }
-
+  createCanvas(300, 300);
+  frameRate(frames)
+  init_setup();
 
 }
 
 function draw() {
-  background(0);
+  background(150);
 
-  display_maze();
-    
-  //if(graph.pathFound === false) simulateBFS(0, 1)
+  simulateBFS()
+  strokeWeight(1)
 
-  strokeWeight(1);
+  drawAnts();
 
-  for (let i = 0; i < graph.nodes.length; i++) {
-    graph.nodes[i].display();
-    //graph.nodes[i].findNeighbors(K);
-    //graph.nodes[i].continueMoving = false
-    if(graph.nodes[i].continueMoving) graph.nodes[i].move();
-  }
+  
 
 
 }

@@ -1,6 +1,6 @@
 class Vehicle {
-    constructor(id, x, y, angle) {
-      this.id = id;
+    constructor(index, x, y, angle) {
+      this.index = index;
       this.startX = x;
       this.startY = y;
       this.angle = angle;
@@ -9,12 +9,9 @@ class Vehicle {
     
     wander() {
       this.wanderAngle += random(-this.change, this.change);
-      const circlePos = this.vel.copy();
-      circlePos.setMag(this.wanderD);
-      circlePos.add(this.pos);
+      const circlePos = this.vel.copy().setMag(this.wanderD).add(this.pos);
       const h = this.vel.heading();
-      const circleOffset = p5.Vector.fromAngle(this.wanderAngle + h);
-      circleOffset.mult(this.wanderR);
+      const circleOffset = p5.Vector.fromAngle(this.wanderAngle + h).mult(this.wanderR);
       const target = p5.Vector.add(circlePos, circleOffset);
       return this.seek(target);
     }
@@ -28,13 +25,8 @@ class Vehicle {
 
       p2.rotate(6.109).setMag(maxRange).add(this.pos);
       b.rotate(3.83972).setMag(maxRange / 4).add(this.pos);
-
-      stroke(0)
-      let l1 = line(a.x, a.y, p1.x, p1.y)
-      let l2 = line(b.x, b.y, p2.x, p2.y)
       
       let avoidDirection = createVector(0, 0);
-
       let hit_left = findIntersection(a.x, a.y, p1.x, p1.y, obstacles)
       const left = createVector(hit_left.x, hit_left.y)
 
@@ -50,6 +42,7 @@ class Vehicle {
         avoidDirection = p1.sub(right).mult(this.pos.dist(right))
         return this.seek(avoidDirection)
       }
+
       return avoidDirection
     }
 
@@ -80,10 +73,8 @@ class Vehicle {
     }
     
     seek(target) {
-      const desired = p5.Vector.sub(target, this.pos);
-      desired.setMag(this.maxspeed);
-      const steering = p5.Vector.sub(desired, this.vel);
-      steering.limit(this.maxforce);
+      const desired = p5.Vector.sub(target, this.pos).setMag(this.maxspeed);
+      const steering = p5.Vector.sub(desired, this.vel).limit(this.maxforce);
       return steering;
     }
     
@@ -121,7 +112,7 @@ class Vehicle {
     
       this.applyForce(w);
       this.applyForce(e);
-      this.applyForce(avoidForce.mult(2));
+      this.applyForce(avoidForce.mult(3));
 
     }
     
@@ -130,15 +121,7 @@ class Vehicle {
       this.vel.limit(this.maxspeed);
       this.pos.add(this.vel);
       this.acc.mult(0);
-      if (frames % 5 === 0) pheromones.push(new Pheromone(this.pos.x, this.pos.y, this.food));
-    }
-
-    wrapAround() {
-      if (this.pos.x < 25) this.pos.x = width-25;
-      else if (this.pos.x > width-25) this.pos.x = 25;
-      
-      if (this.pos.y < 25) this.pos.y = height-25;
-      else if (this.pos.y > height-25) this.pos.y = 25;
+      if (frames % 5 === 0) pheromones.push(new Pheromone(this.pos.x, this.pos.y));
     }
     
     reset() {
@@ -146,15 +129,13 @@ class Vehicle {
       this.vel = p5.Vector.fromAngle(this.angle).mult(1);
       this.acc = createVector();
       this.r = 3;
-      this.maxspeed = 1; //2;
-      this.maxforce = 0.05; //0.1;
-      this.wanderR = 12.5; //25;
-      this.wanderD = 40; //80;
+      this.maxspeed = 1;
+      this.maxforce = 0.06;
+      this.wanderR = 50;
+      this.wanderD = 15;
       this.change = 0.3;
       this.wanderAngle = 0;
-      this.perception = 50;
-      this.food = false;
-      this.rays = new Array(2);
+      this.perception = 100;
     }
     
     render() {
@@ -163,7 +144,6 @@ class Vehicle {
       rotate(this.vel.heading());
       stroke(0);
       fill(128);
-      if (this.food) fill(0, 255, 0);
       triangle(this.r*2, 0, -this.r*2, -this.r, -this.r*2, this.r);
       pop();
     }
