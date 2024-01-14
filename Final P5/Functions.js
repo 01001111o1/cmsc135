@@ -35,16 +35,26 @@ function BFS(root, target){
 function simulateBFS(){
 
   path = []
+  temp = [] // 1 path; 2D array. Paths = [ [[], []], [[], []], [[], []] ]
   for (let i = 0; i < COUNT; i++) graph.nodes[i].findNeighbors();
   
   BFS(root, target);
-
-  for (let k = 0; k < path.length - 1; k++) {
-    strokeWeight(4);
-    stroke(255);
-    line(...path[k].coords(), ...path[k + 1].coords());
-  }
   
+  // for (let k = 0; k < path.length - 1; k++) {
+  //   strokeWeight(4);
+  //   stroke(255);
+  //   line(...path[k].coords(), ...path[k + 1].coords());
+  // }
+
+  for (let k = 0; k < path.length; k++) {
+    temp.push([...path[k].coords()])
+  }
+
+  if(temp.length > 1 && frames % 120 === 0){
+    paths.push(temp)
+  }
+
+
 }
 
 function add_edge(p1, p2){
