@@ -11,8 +11,8 @@ function keyPressed() {
 function collision(x1, y1, x2, y2, x3, y3, x4, y4){
   
     let intersection = {
-        "x" : false,
-        "y" : false
+        x : false,
+        y : false
     }
 
     let uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
@@ -24,8 +24,8 @@ function collision(x1, y1, x2, y2, x3, y3, x4, y4){
         let intersectionY = y1 + (uA * (y2-y1));
         
     intersection = {
-        "x" : intersectionX,
-        "y" : intersectionY
+        x : intersectionX,
+        y : intersectionY
         }
         
         return intersection
@@ -42,5 +42,5 @@ function findIntersection(a, b, c, d, obstacles) {
             return intersection;
         }
     }
-    return {"x" : false, "y": false};
+    return {x : false, y: false};
 }

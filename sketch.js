@@ -1,7 +1,7 @@
 let vehicles = [], pheromones = [], obstacles = [], food = [];
 let home, homeR;
 let frames = 60, maxRange = 60;
-let COUNT = 3
+let COUNT = 2
 
 function setup() {
   createCanvas(800, 800);
@@ -11,8 +11,9 @@ function setup() {
   homeR = 12;
 
   obstacles.push(new Obstacle(400, 200, 500, 450));
-  obstacles.push(new Obstacle(100, 400, 300, 200));
-  obstacles.push(new Obstacle(200, 600, 600, 600));
+  //obstacles.push(new Obstacle(100, 400, 300, 200));
+  //obstacles.push(new Obstacle(200, 600, 600, 600));
+  //obstacles.push(new Obstacle(600, 400, 700, 200));
   obstacles.push(new Obstacle(25, 25, width - 25, 25));
   obstacles.push(new Obstacle(25, 25, 25, height - 25));
   obstacles.push(new Obstacle(width - 25, 25, width - 25, height - 25));
